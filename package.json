@@ -1,0 +1,68 @@
+{
+  "name": "@vanduo-oss/music-player",
+  "version": "1.0.0",
+  "description": "Standalone HTML5 audio player for Vanduo apps and docs",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./css": "./dist/vanduo-music-player.css",
+    "./iife": {
+      "default": "./dist/vanduo-music-player.iife.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "vanduo",
+    "music-player",
+    "audio",
+    "html5-audio",
+    "playlist"
+  ],
+  "license": "MIT",
+  "author": "vanduo-oss",
+  "homepage": "https://vanduo.dev/#docs/music-player",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vanduo-oss/music-player"
+  },
+  "sideEffects": [
+    "./dist/vanduo-music-player.css",
+    "./dist/vanduo-music-player.iife.js"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "rm -rf dist",
+    "prepack": "pnpm run build",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.59.1",
+    "esbuild": "^0.27.7"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@playwright/test",
+      "esbuild"
+    ]
+  },
+  "packageManager": "pnpm@10.28.2"
+}

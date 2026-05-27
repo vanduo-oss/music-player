@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player Test Fixture</title>
+    <link rel="stylesheet" href="/dist/vanduo-music-player.css">
+    <style>
+        :root {
+            --vd-bg-primary: #ffffff;
+            --vd-bg-secondary: #f8f9fa;
+            --vd-border-color: #dee2e6;
+            --vd-text-primary: #1a1d20;
+            --vd-text-muted: #868e96;
+            --vd-color-primary: #364fc7;
+            --vd-color-primary-rgb: 54, 79, 199;
+            --vd-color-primary-alpha-10: rgba(54, 79, 199, 0.1);
+            --vd-border-radius: 0.5rem;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: system-ui, sans-serif;
+        }
+
+        section {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Music Player Test Fixture</h1>
+
+        <section>
+            <h2>Minimal Player</h2>
+            <div id="player-minimal" class="vd-music-player"></div>
+        </section>
+
+        <section>
+            <h2>With Progress Bar</h2>
+            <div id="player-progress" class="vd-music-player"></div>
+        </section>
+
+        <section>
+            <h2>With Playlist</h2>
+            <div id="player-playlist" class="vd-music-player"></div>
+        </section>
+
+        <section>
+            <h2>With Shuffle</h2>
+            <div id="player-shuffle" class="vd-music-player"></div>
+        </section>
+
+        <section>
+            <h2>No Tracks</h2>
+            <div id="player-no-tracks" class="vd-music-player"></div>
+        </section>
+
+        <section>
+            <h2>Data Attribute Init</h2>
+            <div id="player-data-attr"
+                 class="vd-music-player"
+                 data-music-player
+                 data-music-player-options='{"tracks":[{"name":"Data Track 01","url":"/tests/fixtures/audio/d1.mp3"},{"name":"Data Track 02","url":"/tests/fixtures/audio/d2.mp3"}]}'></div>
+        </section>
+
+        <section>
+            <h2>All Features</h2>
+            <div id="player-all" class="vd-music-player"></div>
+        </section>
+
+        <section>
+            <h2>Floating options</h2>
+            <div id="player-float" class="vd-music-player"></div>
+        </section>
+
+        <section>
+            <h2>Destroy Test</h2>
+            <div id="player-destroy" class="vd-music-player"></div>
+        </section>
+    </main>
+
+    <script>
+        window.Vanduo = {
+            components: {},
+            register(name, component) {
+                this.components[name] = component;
+            },
+            queryAll(root, selector) {
+                const scope = root && root.querySelectorAll ? root : document;
+                const matches = [];
+                if (scope instanceof Element && scope.matches(selector)) {
+                    matches.push(scope);
+                }
+                scope.querySelectorAll(selector).forEach((el) => matches.push(el));
+                return matches;
+            }
+        };
+    </script>
+    <script src="/dist/vanduo-music-player.iife.js"></script>
+    <script>
+        (function () {
+            var tracks = [
+                { name: 'Test Track A', url: '/tests/fixtures/audio/a.mp3' },
+                { name: 'Test Track B', url: '/tests/fixtures/audio/b.mp3' },
+                { name: 'Test Track C', url: '/tests/fixtures/audio/c.mp3' },
+            ];
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-minimal'),
+                { tracks: [tracks[0], tracks[1]] }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-progress'),
+                { tracks: tracks, showProgress: true }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-playlist'),
+                { tracks: tracks, showPlaylist: true }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-shuffle'),
+                { tracks: tracks, shuffle: true }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-no-tracks'),
+                { tracks: [] }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-all'),
+                { tracks: tracks, showProgress: true, showPlaylist: true, shuffle: false, volume: 0.8 }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-float'),
+                {
+                    tracks: [tracks[0]],
+                    showProgress: true,
+                    glass: true,
+                    detachable: true,
+                    draggable: true,
+                    minimizable: true,
+                    floatingPosition: 'bottom-left',
+                }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-destroy'),
+                { tracks: [tracks[0]] }
+            );
+
+            VanduoMusicPlayer.init();
+        })();
+    </script>
+</body>
+</html>
