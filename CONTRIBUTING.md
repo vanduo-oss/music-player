@@ -38,3 +38,48 @@ Monorepo changes that touch the player should land here first (or in the same PR
 ## Tests in the monorepo
 
 `framework/tests/components/music-player.spec.ts` mirrors the package spec against the framework test server. Keep behavior in sync when adding API or fixture coverage.
+
+## OpenSpec workflow
+
+This repo uses [OpenSpec](https://openspec.dev/) for spec-driven development. Behavioral requirements live in `openspec/specs/`; proposed work lives in `openspec/changes/` until archived.
+
+### Setup
+
+OpenSpec is a dev dependency—no global install required:
+
+```bash
+pnpm install
+```
+
+After upgrading `@fission-ai/openspec`, refresh Cursor slash commands:
+
+```bash
+pnpm openspec:update
+```
+
+Restart Cursor if new `/opsx:*` commands do not appear.
+
+### Day-to-day flow
+
+1. **Propose** — In Cursor, run `/opsx:propose <short-name>` (e.g. add keyboard shortcuts). This creates `openspec/changes/<name>/` with proposal, design, tasks, and spec deltas.
+2. **Implement** — Run `/opsx:apply` to work through `tasks.md` and keep code in sync.
+3. **Archive** — When shipped, run `/opsx:archive` to merge spec deltas into `openspec/specs/` and move the change to `archive/`.
+
+Validate specs anytime:
+
+```bash
+pnpm openspec:validate
+pnpm openspec:list
+```
+
+### What to update when behavior changes
+
+| Artifact | Role |
+|----------|------|
+| `openspec/specs/` | Source of truth for requirements (via archive) |
+| `README.md` | User-facing API and options reference |
+| `types/index.d.ts` | TypeScript public contract |
+| `tests/components/music-player.spec.ts` | Playwright coverage |
+| `CHANGELOG.md` | Release notes per version |
+
+Specs capture *what* and *why*; README stays concise for npm consumers. Do not add `openspec/` to the npm `files` field.

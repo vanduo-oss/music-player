@@ -1,14 +1,8 @@
 # @vanduo-oss/music-player
 
+version: 0.0.1
+
 Standalone HTML5 audio player with transport controls, volume, optional shuffle, seek bar, playlist, glass surface, and detachable floating mode.
-
-## Install
-
-```bash
-pnpm add @vanduo-oss/music-player
-```
-
-Requires Vanduo core CSS tokens (`@vanduo-oss/framework` or equivalent) for theming.
 
 ## Usage
 
@@ -114,7 +108,7 @@ All events bubble on the player container:
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the monorepo ↔ standalone repo workflow and publish steps.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the monorepo ↔ standalone repo workflow, npm publish steps, and the OpenSpec (`/opsx:propose` → `/opsx:apply` → `/opsx:archive`) workflow.
 
 ## License
 

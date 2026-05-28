@@ -1,0 +1,26 @@
+schema: spec-driven
+
+context: |
+  Package: @vanduo-oss/music-player (MIT, vanduo-oss org). Current release version: 0.0.1.
+  Stack: Vanilla JavaScript (ESM source in src/index.js), esbuild → ESM/CJS/IIFE + CSS (scripts/build.js).
+  Tests: Playwright component tests in tests/; fixture server on port 8793; load dist IIFE from tests/fixtures/.
+  Repo: Standalone git repo nested in Vanduo monorepo (0_vanduo). Canonical source here; sync built dist/ to monorepo framework/ and docs/ per CONTRIBUTING.md.
+  Public API contract: types/index.d.ts + README.md. Breaking changes require semver bump, CHANGELOG entry, and README updates.
+  Vanduo integration (optional): Vanduo.register('musicPlayer'), data-music-player, data-music-player-options JSON, reinit(root).
+  Testing constraints: Fixtures use empty audio URLs; assert DOM, ARIA, programmatic API, and custom events—not real playback.
+  Do not publish openspec/ to npm (files field is dist/, README, CHANGELOG, LICENSE only).
+
+rules:
+  proposal:
+    - Call out npm semver impact and whether monorepo artifact sync is required
+    - Note if README, types/index.d.ts, or Playwright tests must change
+  specs:
+    - Use Given/When/Then scenario format under each requirement
+    - Reference relevant test.describe blocks in tests/components/music-player.spec.ts when applicable
+    - Use SHALL/MUST for normative requirements
+  design:
+    - Prefer extending src/index.js and src/styles.css over new abstractions
+    - Document build output impact (ESM, CJS, IIFE, CSS)
+  tasks:
+    - Include pnpm build and pnpm test when code changes
+    - Include types/README/CHANGELOG updates when the public API changes
