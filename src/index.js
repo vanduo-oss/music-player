@@ -1,4 +1,4 @@
-export const VD_MUSIC_PLAYER_VERSION = '0.0.1';
+export const VD_MUSIC_PLAYER_VERSION = '1.0.0';
 
 const CORNER_POSITIONS = [
   'bottom-left',
@@ -6,6 +6,14 @@ const CORNER_POSITIONS = [
   'top-left',
   'top-right'
 ];
+
+const REPEAT_MODES = ['off', 'one', 'all'];
+const REPEAT_CYCLE = { off: 'one', one: 'all', all: 'off' };
+const REPEAT_LABELS = { off: 'Repeat', one: 'Repeat one', all: 'Repeat all' };
+
+function normalizeRepeat(value) {
+  return REPEAT_MODES.includes(value) ? value : 'off';
+}
 
 function hasWindow() {
   return typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -44,12 +52,13 @@ function normalizeCornerPosition(position) {
 /**
  * Vanduo Framework - Music Player Component
  * HTML5 Audio-based music player with transport controls, volume,
- * and optional shuffle, seek bar, and playlist features.
+ * and optional shuffle, repeat modes, seek bar, and playlist features.
  *
  * Options (passed to MusicPlayer.init or data-music-player-options):
  *   tracks        {Array}   - [{name, url}] — required
  *   volume        {number}  - Initial volume 0–1 (default 0.5)
  *   shuffle       {boolean} - Shuffle on init (default false)
+ *   repeat        {string}  - 'off' | 'one' | 'all' (default 'off')
  *   showProgress  {boolean} - Show seek/progress bar (default false)
  *   showPlaylist  {boolean} - Show expandable playlist panel (default false)
  *   autoAdvance   {boolean} - Auto-play next track on end (default true)
@@ -67,7 +76,8 @@ function normalizeCornerPosition(position) {
  *   musicplayer:pause        — playback paused
  *   musicplayer:trackchange  — detail: { index, name, url }
  *   musicplayer:volumechange — detail: { volume }
- *   musicplayer:ended        — last track ended (autoAdvance=false only)
+ *   musicplayer:repeatchange — detail: { repeat: 'off'|'one'|'all' }
+ *   musicplayer:ended        — track ended with repeat off and no advance
  *   musicplayer:detach       — after floating player is created
  *   musicplayer:attach       — after returned to document flow
  *   musicplayer:minimize     — collapsed to minimal controls
@@ -177,6 +187,7 @@ const MusicPlayer = {
       tracks: [],
       volume: 0.5,
       shuffle: false,
+      repeat: 'off',
       showProgress: false,
       showPlaylist: false,
       autoAdvance: true,
@@ -231,6 +242,7 @@ const MusicPlayer = {
         isPlaying: false,
         volume: Math.max(0, Math.min(1, opts.volume)),
         shuffle: opts.shuffle,
+        repeat: normalizeRepeat(opts.repeat),
         showProgress: opts.showProgress,
         showPlaylist: opts.showPlaylist,
         autoAdvance: opts.autoAdvance,
@@ -262,6 +274,7 @@ const MusicPlayer = {
         btnPlay: container.querySelector('.vd-music-player-btn-play'),
         btnPrev: container.querySelector('.vd-music-player-btn-prev'),
         btnNext: container.querySelector('.vd-music-player-btn-next'),
+        btnRepeat: container.querySelector('.vd-music-player-btn-repeat'),
         btnShuffle: container.querySelector('.vd-music-player-btn-shuffle'),
         btnPlaylist: container.querySelector('.vd-music-player-btn-playlist'),
         btnDetach: container.querySelector('.vd-music-player-btn-detach'),
@@ -315,6 +328,46 @@ const MusicPlayer = {
         if (!btn) return;
         btn.classList.toggle('is-active', state.shuffle);
         btn.setAttribute('aria-pressed', state.shuffle ? 'true' : 'false');
+      };
+
+      const renderRepeatBtn = () => {
+        const btn = refs.btnRepeat;
+        if (!btn) return;
+        btn.innerHTML = '';
+        btn.appendChild(icon('repeat'));
+        if (state.repeat === 'one') {
+          const badge = document.createElement('span');
+          badge.className = 'vd-music-player-repeat-badge';
+          badge.setAttribute('aria-hidden', 'true');
+          badge.textContent = '1';
+          btn.appendChild(badge);
+        }
+        btn.classList.toggle('is-active', state.repeat !== 'off');
+        btn.setAttribute('aria-pressed', state.repeat !== 'off' ? 'true' : 'false');
+        const label = REPEAT_LABELS[state.repeat] || REPEAT_LABELS.off;
+        btn.setAttribute('aria-label', label);
+        btn.title = label;
+      };
+
+      const dispatchRepeatChange = () => {
+        container.dispatchEvent(
+          new CustomEvent('musicplayer:repeatchange', {
+            bubbles: true,
+            detail: { repeat: state.repeat },
+          })
+        );
+      };
+
+      const cycleRepeat = () => {
+        state.repeat = REPEAT_CYCLE[state.repeat] || 'off';
+        renderRepeatBtn();
+        dispatchRepeatChange();
+      };
+
+      const setRepeatMode = (mode) => {
+        state.repeat = normalizeRepeat(mode);
+        renderRepeatBtn();
+        dispatchRepeatChange();
       };
 
       const renderPlaylistItems = () => {
@@ -399,6 +452,18 @@ const MusicPlayer = {
       };
 
       const onEnded = () => {
+        if (state.repeat === 'one') {
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
+          return;
+        }
+        if (state.repeat === 'all') {
+          if (state.tracks.length > 0) {
+            const next = (state.currentIndex + 1) % state.tracks.length;
+            loadTrack(next, true);
+          }
+          return;
+        }
         if (state.autoAdvance && state.tracks.length > 1) {
           const next = (state.currentIndex + 1) % state.tracks.length;
           loadTrack(next, true);
@@ -482,6 +547,14 @@ const MusicPlayer = {
         };
         refs.btnNext.addEventListener('click', handler);
         cleanupFunctions.push(() => refs.btnNext.removeEventListener('click', handler));
+      }
+
+      if (refs.btnRepeat) {
+        const handler = () => {
+          cycleRepeat();
+        };
+        refs.btnRepeat.addEventListener('click', handler);
+        cleanupFunctions.push(() => refs.btnRepeat.removeEventListener('click', handler));
       }
 
       if (refs.btnShuffle) {
@@ -592,6 +665,7 @@ const MusicPlayer = {
       renderPlayIcon();
       renderTrackName();
       renderVolumeIcon();
+      renderRepeatBtn();
       if (opts.showPlaylist) renderPlaylistItems();
 
       /* ── Persist instance ───────────────────────────────── */
@@ -601,6 +675,8 @@ const MusicPlayer = {
         refs,
         cleanup: cleanupFunctions,
         ui: { restore: null, unbindDrag: null },
+        cycleRepeat,
+        setRepeatMode,
       });
       container.setAttribute('data-music-player-initialized', 'true');
     },
@@ -716,6 +792,14 @@ const MusicPlayer = {
       controls.appendChild(btnPrev);
       controls.appendChild(btnPlay);
       controls.appendChild(btnNext);
+
+      const btnRepeat = document.createElement('button');
+      btnRepeat.type = 'button';
+      btnRepeat.className = 'vd-music-player-btn vd-music-player-btn-repeat';
+      btnRepeat.setAttribute('aria-label', REPEAT_LABELS[normalizeRepeat(state.repeat)]);
+      btnRepeat.setAttribute('aria-pressed', state.repeat !== 'off' ? 'true' : 'false');
+      btnRepeat.appendChild(icon('repeat'));
+      controls.appendChild(btnRepeat);
 
       // Optional shuffle button
       if (state.showPlaylist || state.shuffle !== undefined) {
@@ -901,6 +985,27 @@ const MusicPlayer = {
       const inst = this.instances.get(container);
       if (!inst || !inst.refs.btnShuffle) return;
       inst.refs.btnShuffle.click();
+    },
+
+    /**
+     * Cycle repeat mode: off → one → all → off.
+     * @param {HTMLElement} container
+     */
+    repeat: function (container) {
+      const inst = this.instances.get(container);
+      if (!inst || typeof inst.cycleRepeat !== 'function') return;
+      inst.cycleRepeat();
+    },
+
+    /**
+     * Set repeat mode explicitly.
+     * @param {HTMLElement} container
+     * @param {'off'|'one'|'all'} mode
+     */
+    setRepeat: function (container, mode) {
+      const inst = this.instances.get(container);
+      if (!inst || typeof inst.setRepeatMode !== 'function') return;
+      inst.setRepeatMode(mode);
     },
 
     /**
@@ -1234,6 +1339,7 @@ const MusicPlayer = {
         currentTrack: s.tracks[s.currentIndex] || null,
         volume: s.volume,
         shuffle: s.shuffle,
+        repeat: s.repeat,
         tracks: s.tracks.slice(),
         isDetached: Boolean(s.isDetached),
         isMinimized: Boolean(s.isMinimized),

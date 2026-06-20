@@ -1,7 +1,7 @@
 schema: spec-driven
 
 context: |
-  Package: @vanduo-oss/music-player (MIT, vanduo-oss org). Current release version: 0.0.1.
+  Package: @vanduo-oss/music-player (MIT, vanduo-oss org). Current release version: 1.0.0.
   Stack: Vanilla JavaScript (ESM source in src/index.js), esbuild → ESM/CJS/IIFE + CSS (scripts/build.js).
   Tests: Playwright component tests in tests/; fixture server on port 8793; load dist IIFE from tests/fixtures/.
   Repo: Standalone git repo nested in Vanduo monorepo (0_vanduo). Canonical source here; sync built dist/ to monorepo framework/ and docs/ per CONTRIBUTING.md.

@@ -61,9 +61,9 @@ The package SHALL expose the release version via `VD_MUSIC_PLAYER_VERSION`, `Van
 
 #### Scenario: Version matches package
 
-- GIVEN package version `0.0.1`
+- GIVEN package version `1.0.0`
 - WHEN the module is loaded
-- THEN `VD_MUSIC_PLAYER_VERSION` and `VanduoMusicPlayer.version` are `"0.0.1"`
+- THEN `VD_MUSIC_PLAYER_VERSION` and `VanduoMusicPlayer.version` are `"1.0.0"`
 
 ### Requirement: Public defaults and instances
 
@@ -73,4 +73,4 @@ The package SHALL expose the release version via `VD_MUSIC_PLAYER_VERSION`, `Van
 
 - GIVEN the runtime API
 - WHEN `VanduoMusicPlayer.defaults` is read
-- THEN it includes default values for `tracks`, `volume`, `shuffle`, `showProgress`, `showPlaylist`, `autoAdvance`, `glass`, `detachable`, `draggable`, `minimizable`, `startMinimized`, `persistPosition`, `persistKey`, and `floatingPosition`
+- THEN it includes default values for `tracks`, `volume`, `shuffle`, `repeat`, `showProgress`, `showPlaylist`, `autoAdvance`, `glass`, `detachable`, `draggable`, `minimizable`, `startMinimized`, `persistPosition`, `persistKey`, and `floatingPosition`

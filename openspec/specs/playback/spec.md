@@ -108,9 +108,52 @@ The player SHALL support `shuffle: true` on init and a `shuffle(container)` API 
 - WHEN `shuffle(container)` is called
 - THEN `getState(container).shuffle` is false
 
+### Requirement: Repeat
+
+The player SHALL support tri-state repeat modes (`off`, `one`, `all`) via a control-bar button, init option `repeat`, and APIs `repeat(container)` (cycle) and `setRepeat(container, mode)`.
+
+#### Scenario: Repeat on init
+
+- GIVEN `initPlayer` with `repeat: 'one'`
+- WHEN initialization completes
+- THEN `getState(container).repeat` is `'one'`
+- AND the repeat control has `aria-pressed="true"` and `aria-label="Repeat one"`
+- AND a badge showing `1` is visible on the repeat button
+
+#### Scenario: repeat API cycles modes
+
+- GIVEN a player with `repeat: 'off'`
+- WHEN `repeat(container)` is called three times
+- THEN modes cycle `'one'` → `'all'` → `'off'`
+
+#### Scenario: setRepeat API sets mode
+
+- GIVEN an initialized player
+- WHEN `setRepeat(container, 'all')` is called
+- THEN `getState(container).repeat` is `'all'`
+
+#### Scenario: Repeat one restarts track
+
+- GIVEN `repeat: 'one'`
+- WHEN the current track ends
+- THEN the same track restarts from the beginning
+- AND `musicplayer:ended` is not dispatched
+
+#### Scenario: Repeat all advances playlist
+
+- GIVEN `repeat: 'all'` and multiple tracks
+- WHEN the current track ends
+- THEN the player advances to the next track and wraps to the first after the last
+
+#### Scenario: Repeat all overrides autoAdvance false
+
+- GIVEN `repeat: 'all'` and `autoAdvance: false`
+- WHEN the current track ends
+- THEN the player still advances to the next track
+
 ### Requirement: Auto-advance on track end
 
-When `autoAdvance` is true (default), the player SHALL advance to the next track when the current track ends. When false, it SHALL dispatch `musicplayer:ended` instead of advancing.
+When `repeat` is `'off'` and `autoAdvance` is true (default), the player SHALL advance to the next track when the current track ends. When `repeat` is `'off'` and `autoAdvance` is false, it SHALL dispatch `musicplayer:ended` instead of advancing.
 
 #### Scenario: Auto-advance enabled
 
@@ -133,7 +176,7 @@ When `autoAdvance` is true (default), the player SHALL advance to the next track
 
 - GIVEN an initialized player
 - WHEN `getState(container)` is called
-- THEN the result includes `isPlaying`, `currentIndex`, `currentTrack`, `volume`, `shuffle`, `tracks`, `isDetached`, and `isMinimized`
+- THEN the result includes `isPlaying`, `currentIndex`, `currentTrack`, `volume`, `shuffle`, `repeat`, `tracks`, `isDetached`, and `isMinimized`
 
 #### Scenario: Unknown element returns null
 

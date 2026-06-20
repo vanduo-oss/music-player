@@ -5,10 +5,13 @@ export interface MusicPlayerTrack {
   url: string;
 }
 
+export type MusicPlayerRepeatMode = 'off' | 'one' | 'all';
+
 export interface MusicPlayerOptions {
   tracks?: MusicPlayerTrack[];
   volume?: number;
   shuffle?: boolean;
+  repeat?: MusicPlayerRepeatMode;
   showProgress?: boolean;
   showPlaylist?: boolean;
   autoAdvance?: boolean;
@@ -28,6 +31,7 @@ export interface MusicPlayerState {
   currentTrack: MusicPlayerTrack | null;
   volume: number;
   shuffle: boolean;
+  repeat: MusicPlayerRepeatMode;
   tracks: MusicPlayerTrack[];
   isDetached: boolean;
   isMinimized: boolean;
@@ -50,6 +54,7 @@ export interface VanduoMusicPlayerApi {
       | 'tracks'
       | 'volume'
       | 'shuffle'
+      | 'repeat'
       | 'showProgress'
       | 'showPlaylist'
       | 'autoAdvance'
@@ -72,6 +77,8 @@ export interface VanduoMusicPlayerApi {
   setVolume(container: HTMLElement, value: number): void;
   setTrack(container: HTMLElement, index: number): void;
   shuffle(container: HTMLElement): void;
+  repeat(container: HTMLElement): void;
+  setRepeat(container: HTMLElement, mode: MusicPlayerRepeatMode): void;
   detach(container: HTMLElement, position?: MusicPlayerCorner): void;
   attach(container: HTMLElement): void;
   minimize(container: HTMLElement): void;

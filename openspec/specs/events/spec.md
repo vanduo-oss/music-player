@@ -56,13 +56,29 @@ The player SHALL dispatch `musicplayer:volumechange` with detail `{ volume }` wh
 
 ### Requirement: Ended event
 
-When `autoAdvance` is false, the player SHALL dispatch `musicplayer:ended` when the last track finishes.
+When `repeat` is `'off'` and `autoAdvance` is false, the player SHALL dispatch `musicplayer:ended` when playback stops at track end without advancing.
 
 #### Scenario: Ended without auto-advance
 
-- GIVEN `autoAdvance: false` on the final track
+- GIVEN `repeat: 'off'` and `autoAdvance: false` on the final track
 - WHEN playback ends
 - THEN `musicplayer:ended` is dispatched on the container
+
+#### Scenario: Ended not fired in repeat modes
+
+- GIVEN `repeat` is `'one'` or `'all'`
+- WHEN the current track ends naturally
+- THEN `musicplayer:ended` is not dispatched
+
+### Requirement: Repeat change event
+
+The player SHALL dispatch `musicplayer:repeatchange` with detail `{ repeat }` when repeat mode changes via the UI or API.
+
+#### Scenario: Repeat change detail
+
+- GIVEN an initialized player
+- WHEN repeat mode changes to `'all'`
+- THEN `musicplayer:repeatchange` detail has `repeat: 'all'`
 
 ### Requirement: Floating mode events
 

@@ -2,6 +2,21 @@
 
 All notable changes to `@vanduo-oss/music-player` are documented here.
 
+## [1.0.0] — Unreleased
+
+### Added
+
+- Tri-state **repeat** control on the transport bar: click cycles **off → one → all → off**.
+- Repeat-one shows a tiny **1** badge on the button; repeat-all uses active styling.
+- Init option `repeat: 'off' | 'one' | 'all'` (default `'off'`).
+- APIs `repeat(container)` (cycle) and `setRepeat(container, mode)`.
+- `getState().repeat` and `musicplayer:repeatchange` event with `{ repeat }` detail.
+- Repeat modes override end-of-track behavior: one restarts the current track; all wraps the playlist (even when `autoAdvance: false`).
+
+### Changed
+
+- Opened `dev-v100` development branch for the v1.0.0 release cycle.
+
 ## [0.0.1] — 2026-05-27
 
 ### Added

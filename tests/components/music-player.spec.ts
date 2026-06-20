@@ -284,6 +284,128 @@ test.describe('Music Player Component @component', () => {
     });
 
     // ────────────────────────────────────────────────────
+    // REPEAT
+    // ────────────────────────────────────────────────────
+    test.describe('Repeat', () => {
+        test('repeat button is visible on all players', async ({ page }) => {
+            await expect(
+                page.locator('#player-minimal .vd-music-player-btn-repeat'),
+            ).toBeVisible();
+        });
+
+        test('repeat player starts in one mode with badge and aria-pressed', async ({ page }) => {
+            const btn = page.locator('#player-repeat .vd-music-player-btn-repeat');
+            await expect(btn).toHaveAttribute('aria-pressed', 'true');
+            await expect(btn).toHaveAttribute('aria-label', 'Repeat one');
+            await expect(btn.locator('.vd-music-player-repeat-badge')).toHaveText('1');
+        });
+
+        test('clicking repeat cycles off → one → all → off', async ({ page }) => {
+            const btn = page.locator('#player-minimal .vd-music-player-btn-repeat');
+            await expect(btn).toHaveAttribute('aria-pressed', 'false');
+
+            await btn.click();
+            await expect(btn).toHaveAttribute('aria-pressed', 'true');
+            await expect(btn).toHaveAttribute('aria-label', 'Repeat one');
+            await expect(btn.locator('.vd-music-player-repeat-badge')).toHaveText('1');
+
+            await btn.click();
+            await expect(btn).toHaveAttribute('aria-pressed', 'true');
+            await expect(btn).toHaveAttribute('aria-label', 'Repeat all');
+            await expect(btn.locator('.vd-music-player-repeat-badge')).toHaveCount(0);
+
+            await btn.click();
+            await expect(btn).toHaveAttribute('aria-pressed', 'false');
+            await expect(btn).toHaveAttribute('aria-label', 'Repeat');
+        });
+
+        test('repeat() API cycles repeat mode', async ({ page }) => {
+            const repeatState = await page.evaluate(() => {
+                const el = document.getElementById('player-minimal');
+                VanduoMusicPlayer.repeat(el);
+                return VanduoMusicPlayer.getState(el).repeat;
+            });
+            expect(repeatState).toBe('one');
+        });
+
+        test('setRepeat() API sets repeat mode explicitly', async ({ page }) => {
+            const repeatState = await page.evaluate(() => {
+                const el = document.getElementById('player-minimal');
+                VanduoMusicPlayer.setRepeat(el, 'all');
+                return VanduoMusicPlayer.getState(el).repeat;
+            });
+            expect(repeatState).toBe('all');
+        });
+
+        test('repeat one restarts current track on ended', async ({ page }) => {
+            const result = await page.evaluate(() => {
+                const el = document.getElementById('player-repeat');
+                const inst = VanduoMusicPlayer.instances.get(el);
+                inst.setRepeatMode('one');
+                inst.state.currentIndex = 1;
+                let endedFired = false;
+                el.addEventListener('musicplayer:ended', () => {
+                    endedFired = true;
+                }, { once: true });
+                inst.audio.dispatchEvent(new Event('ended'));
+                return {
+                    endedFired,
+                    currentIndex: inst.state.currentIndex,
+                    currentTime: inst.audio.currentTime,
+                };
+            });
+            expect(result.endedFired).toBe(false);
+            expect(result.currentIndex).toBe(1);
+            expect(result.currentTime).toBe(0);
+        });
+
+        test('repeat all advances to next track on ended', async ({ page }) => {
+            const result = await page.evaluate(() => {
+                const el = document.getElementById('player-repeat');
+                const inst = VanduoMusicPlayer.instances.get(el);
+                inst.setRepeatMode('all');
+                inst.state.currentIndex = 0;
+                inst.audio.dispatchEvent(new Event('ended'));
+                return inst.state.currentIndex;
+            });
+            expect(result).toBe(1);
+        });
+
+        test('repeat off with autoAdvance false fires ended', async ({ page }) => {
+            const result = await page.evaluate(() => {
+                const el = document.getElementById('player-repeat');
+                const inst = VanduoMusicPlayer.instances.get(el);
+                inst.setRepeatMode('off');
+                inst.state.currentIndex = 2;
+                let endedFired = false;
+                el.addEventListener('musicplayer:ended', () => {
+                    endedFired = true;
+                }, { once: true });
+                inst.audio.dispatchEvent(new Event('ended'));
+                return {
+                    endedFired,
+                    isPlaying: inst.state.isPlaying,
+                };
+            });
+            expect(result.endedFired).toBe(true);
+            expect(result.isPlaying).toBe(false);
+        });
+
+        test('repeatchange event fires when mode changes', async ({ page }) => {
+            const detail = await page.evaluate(() => {
+                const el = document.getElementById('player-minimal');
+                return new Promise((resolve) => {
+                    el.addEventListener('musicplayer:repeatchange', (e) => {
+                        resolve(e.detail.repeat);
+                    }, { once: true });
+                    VanduoMusicPlayer.repeat(el);
+                });
+            });
+            expect(detail).toBe('one');
+        });
+    });
+
+    // ────────────────────────────────────────────────────
     // PROGRESS BAR
     // ────────────────────────────────────────────────────
     test.describe('Progress Bar', () => {
@@ -437,6 +559,7 @@ test.describe('Music Player Component @component', () => {
                 currentIndex: expect.any(Number),
                 volume: expect.any(Number),
                 shuffle: expect.any(Boolean),
+                repeat: expect.any(String),
                 tracks: expect.any(Array),
                 isDetached: expect.any(Boolean),
                 isMinimized: expect.any(Boolean),

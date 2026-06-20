@@ -54,6 +54,11 @@
         </section>
 
         <section>
+            <h2>With Repeat</h2>
+            <div id="player-repeat" class="vd-music-player"></div>
+        </section>
+
+        <section>
             <h2>No Tracks</h2>
             <div id="player-no-tracks" class="vd-music-player"></div>
         </section>
@@ -126,6 +131,11 @@
             VanduoMusicPlayer.initPlayer(
                 document.getElementById('player-shuffle'),
                 { tracks: tracks, shuffle: true }
+            );
+
+            VanduoMusicPlayer.initPlayer(
+                document.getElementById('player-repeat'),
+                { tracks: tracks, repeat: 'one', autoAdvance: false }
             );
 
             VanduoMusicPlayer.initPlayer(
