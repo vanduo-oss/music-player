@@ -1,4 +1,4 @@
-export const VD_MUSIC_PLAYER_VERSION = '0.0.1';
+export const VD_MUSIC_PLAYER_VERSION = '1.0.0';
 
 const CORNER_POSITIONS = [
   'bottom-left',

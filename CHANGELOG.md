@@ -2,6 +2,11 @@
 
 All notable changes to `@vanduo-oss/music-player` are documented here.
 
+## [1.0.0] — Unreleased
+
+### Changed
+- Opened `dev-v100` development branch for the v1.0.0 release cycle.
+
 ## [0.0.1] — 2026-05-27
 
 ### Added

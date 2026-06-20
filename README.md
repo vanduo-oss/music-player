@@ -1,6 +1,6 @@
 # @vanduo-oss/music-player
 
-version: 0.0.1
+version: 1.0.0
 
 Standalone HTML5 audio player with transport controls, volume, optional shuffle, seek bar, playlist, glass surface, and detachable floating mode.
 
