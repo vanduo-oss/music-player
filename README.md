@@ -2,7 +2,7 @@
 
 version: 1.0.0
 
-Standalone HTML5 audio player with transport controls, volume, optional shuffle, seek bar, playlist, glass surface, and detachable floating mode.
+Standalone HTML5 audio player with transport controls, volume, optional shuffle and repeat modes, seek bar, playlist, glass surface, and detachable floating mode.
 
 ## Usage
 
@@ -72,6 +72,7 @@ reinit(document.getElementById('app'));
 | `tracks` | Array | `[]` | `{ name, url }` track list |
 | `volume` | number | `0.5` | Initial volume 0–1 |
 | `shuffle` | boolean | `false` | Shuffle on init |
+| `repeat` | `'off' \| 'one' \| 'all'` | `'off'` | Repeat mode on init |
 | `showProgress` | boolean | `false` | Seek bar + elapsed/duration |
 | `showPlaylist` | boolean | `false` | Collapsible playlist |
 | `autoAdvance` | boolean | `true` | Play next track on end |
@@ -86,7 +87,7 @@ reinit(document.getElementById('app'));
 
 ## API
 
-`play`, `pause`, `toggle`, `next`, `previous`, `setVolume`, `setTrack`, `shuffle`, `detach`, `attach`, `minimize`, `expand`, `toggleMinimize`, `setPosition`, `getState`, `destroy`, `destroyAll`, `init`, `initPlayer`.
+`play`, `pause`, `toggle`, `next`, `previous`, `setVolume`, `setTrack`, `shuffle`, `repeat`, `setRepeat`, `detach`, `attach`, `minimize`, `expand`, `toggleMinimize`, `setPosition`, `getState`, `destroy`, `destroyAll`, `init`, `initPlayer`.
 
 `setPosition(el, corner)` accepts any corner preset or `{ x, y }` viewport pixels while detached.
 
@@ -100,7 +101,8 @@ All events bubble on the player container:
 | `musicplayer:pause` | — |
 | `musicplayer:trackchange` | `{ index, name, url }` |
 | `musicplayer:volumechange` | `{ volume }` |
-| `musicplayer:ended` | — (when `autoAdvance: false`) |
+| `musicplayer:repeatchange` | `{ repeat: 'off' \| 'one' \| 'all' }` |
+| `musicplayer:ended` | — (when `repeat: 'off'` and `autoAdvance: false`) |
 | `musicplayer:detach` | — |
 | `musicplayer:attach` | — |
 | `musicplayer:minimize` | — |

@@ -29,6 +29,14 @@ Every initialized player container SHALL expose landmark and live-region semanti
 - WHEN the play button is inspected
 - THEN it has an `aria-label` matching play/pause intent
 
+#### Scenario: Repeat button accessibility
+
+- GIVEN an initialized player
+- WHEN the repeat button is inspected
+- THEN it has `aria-label` of `"Repeat"`, `"Repeat one"`, or `"Repeat all"` matching the current mode
+- AND `aria-pressed` is `"true"` when mode is `one` or `all`, otherwise `"false"`
+- AND repeat-one mode shows a visible `1` badge on the button
+
 ### Requirement: Optional progress bar
 
 When `showProgress` is true, the player SHALL render a seekable progress control with elapsed and duration display.
