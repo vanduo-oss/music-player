@@ -2,14 +2,15 @@
 
 All notable changes to `@vanduo-oss/music-player` are documented here.
 
-## [1.1.0] — Unreleased
+## [1.1.0] — 2026-06-27
 
 ### Added
 
 - **Optional Vue 3 bindings** at `@vanduo-oss/music-player/vue` — a `VdMusicPlayer` component (props `tracks`, `options`) wrapping the player. `vue` is an *optional* peer dependency, marked external in the build, so vanilla consumers are unaffected. SSR-safe (the player is created on mount); the bubbling `musicplayer:*` events are forwarded as Vue emits.
 - First OpenSpec `vue-bindings` capability; `package-integration` extended with the `./vue` subpath.
+- `llms.txt` LLM context file and a README **Vue 3** section; `llms.txt` is now published with the package (`files`).
 
-## [1.0.0] — Unreleased
+## [1.0.0] — 2026-06-20
 
 ### Added
 

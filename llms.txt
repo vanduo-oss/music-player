@@ -1,0 +1,88 @@
+# @vanduo-oss/music-player v1.1.0 — LLM Context
+
+You are an expert on **@vanduo-oss/music-player**, the **standalone HTML5 audio
+player** of the Vanduo design system: transport controls, volume, optional
+shuffle and tri-state repeat, seek bar, playlist, a frosted **glass** surface,
+and a detachable **floating** mode (drag, minimize, persist position).
+
+It ships three ways to consume the same player:
+
+- **Vanilla / CDN** — IIFE bundle exposes `window.VanduoMusicPlayer`, auto-registers with `@vanduo-oss/framework`.
+- **ESM/CJS** — `import VanduoMusicPlayer from '@vanduo-oss/music-player'`.
+- **Vue 3** — optional `@vanduo-oss/music-player/vue` (`vue` is an *optional* peer).
+
+---
+
+## Core Principles
+- **Framework-agnostic core**: the player is plain JS/DOM; Vue is an opt-in subpath.
+- **One player per element**: instances live in `VanduoMusicPlayer.instances` (`Map<HTMLElement, instance>`).
+- **Events bubble**: all `musicplayer:*` events bubble on the container.
+- **Lifecycle hygiene**: `init`/`initPlayer` to create, `destroy`/`destroyAll` to clean up.
+
+---
+
+## Install
+```bash
+pnpm add @vanduo-oss/music-player
+# Vue users also need `vue` (>=3.3) — already in most Vue apps.
+```
+
+## Exports
+| Export | Path | Contents |
+| --- | --- | --- |
+| `.` | `dist/index.js` (+ `dist/index.d.ts`) | `VanduoMusicPlayer` default + named API; fully typed |
+| `./css` | `dist/vanduo-music-player.css` | player styles (glass, floating, playlist) |
+| `./vue` | `dist/vue.js` (+ `dist/vue.d.ts`) | `VdMusicPlayer` Vue 3 component |
+| `./iife` | `dist/vanduo-music-player.iife.js` | browser global `window.VanduoMusicPlayer` |
+
+## ESM / CJS
+```js
+import VanduoMusicPlayer from '@vanduo-oss/music-player';
+import '@vanduo-oss/music-player/css';
+
+VanduoMusicPlayer.initPlayer(el, { tracks: [{ name: 'Song', url: '/song.mp3' }], showPlaylist: true });
+```
+
+## Options
+`tracks: {name,url}[]`, `volume` (0–1, default `0.5`), `shuffle`, `repeat`
+(`'off' | 'one' | 'all'`, default `'off'`), `showProgress`, `showPlaylist`,
+`autoAdvance` (default `true`), `glass`, `detachable`, `floatingPosition`
+(`bottom-right` default; also `bottom-left`/`top-left`/`top-right`), `draggable`,
+`minimizable`, `startMinimized`, `persistPosition`, `persistKey`.
+
+## API
+`play`, `pause`, `toggle`, `next`, `previous`, `setVolume`, `setTrack`,
+`shuffle`, `repeat` (cycle), `setRepeat(el, mode)`, `detach`, `attach`,
+`minimize`, `expand`, `toggleMinimize`, `setPosition(el, corner | {x,y})`,
+`getState`, `destroy`, `destroyAll`, `init`, `initPlayer`, `reinit(root)`.
+
+## Custom events (bubble on the container)
+`musicplayer:play`, `:pause`, `:trackchange` `{index,name,url}`, `:volumechange`
+`{volume}`, `:repeatchange` `{repeat}`, `:ended`, `:detach`, `:attach`,
+`:minimize`, `:expand`.
+
+## Vue 3 (`@vanduo-oss/music-player/vue`)
+```vue
+<script setup>
+import { VdMusicPlayer } from '@vanduo-oss/music-player/vue';
+import '@vanduo-oss/music-player/css';
+</script>
+<template>
+  <VdMusicPlayer :tracks="tracks" :options="{ showPlaylist: true, glass: true }" @trackchange="onTrack" />
+</template>
+```
+- Props: `tracks` (`{name,url}[]`) and `options` (any player option).
+- Emits mirror the events **without** the `musicplayer:` prefix, plus `ready` (container on mount).
+- **SSR-safe**: the player is created on mount; changing `tracks`/`options` recreates it.
+- Exposes `{ player, container() }` via template ref.
+
+## Vanduo Auto Init (Vanilla)
+```html
+<div class="vd-music-player" data-music-player
+  data-music-player-options='{"tracks":[{"name":"Song","url":"/song.mp3"}],"showProgress":true}'></div>
+```
+Loaded after `vanduo.min.js`, it registers as `musicPlayer`; `Vanduo.init()` mounts it.
+After DOM updates call `reinit(root)` (ESM) or `Vanduo.reinit('musicPlayer')` (IIFE).
+
+## Version
+`VD_MUSIC_PLAYER_VERSION` and `VanduoMusicPlayer.version` expose the package version.
