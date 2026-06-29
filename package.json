@@ -28,9 +28,9 @@
   "files": [
     "dist/",
     "README.md",
+    "SKILL.md",
     "CHANGELOG.md",
-    "LICENSE",
-    "llms.txt"
+    "LICENSE"
   ],
   "keywords": [
     "vanduo",
